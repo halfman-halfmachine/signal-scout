@@ -10,8 +10,8 @@
 
 services:
   signal-scout:
-    # Replace OWNER with your GitHub org/user, or use --build to build locally.
-    image: ghcr.io/OWNER/signal-scout:latest
+    # Pull the prebuilt public image, or use --build to build locally.
+    image: ghcr.io/halfman-halfmachine/signal-scout:latest
     build: .
     container_name: signal-scout
     ports:

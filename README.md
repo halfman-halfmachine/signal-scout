@@ -1,11 +1,11 @@
 # Signal Scout
 
-Self-hostable, niche-agnostic **market-signal intelligence + content engine**.
+Self-hostable, niche-agnostic **market-signal intelligence system**.
 
 Signal Scout ingests items from public sources (Hacker News, Reddit, arXiv,
 analyst/competitor/news RSS, Google News), scores each one through a 12-layer
 intelligence engine, routes the high-value signals into a review queue, and turns
-any signal into structured content (LinkedIn posts, video scripts, podcast
+any signal into structured outputs for content creation (LinkedIn posts, video scripts, podcast
 outlines, and more) across 14 narrative frameworks.
 
 It ships as a **single Docker image**: a FastAPI backend that serves both the API

@@ -30,7 +30,7 @@ ANTHROPIC_BASE_URL = os.environ.get(
 ANTHROPIC_AUTH_TOKEN = os.environ.get("ANTHROPIC_AUTH_TOKEN", "").strip()
 
 # Claude model + token budget (kept overridable for cost control).
-ANTHROPIC_MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-opus-4-5").strip()
+ANTHROPIC_MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-haiku-4-5").strip()
 ANTHROPIC_MAX_TOKENS = int(os.environ.get("ANTHROPIC_MAX_TOKENS", "2800"))
 
 # Whether to advertise the Anthropic `web_search` server tool. Only the native

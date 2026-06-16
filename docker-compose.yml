@@ -21,8 +21,8 @@ services:
       SCOUT_PASSWORD: "${SCOUT_PASSWORD:-}"
       # Optional Anthropic key. Without it, generation falls back to templates.
       ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY:-}"
-      ANTHROPIC_MODEL: "${ANTHROPIC_MODEL:-claude-opus-4-5}"
-      # Optional gateway override (e.g. a Snowflake Cortex Anthropic endpoint).
+      ANTHROPIC_MODEL: "${ANTHROPIC_MODEL:-claude-haiku-4-5}"
+      # Optional gateway override (e.g. a corporate or self-hosted LLM gateway).
       # ANTHROPIC_AUTH_TOKEN is sent as a bearer token in place of x-api-key.
       ANTHROPIC_BASE_URL: "${ANTHROPIC_BASE_URL:-}"
       ANTHROPIC_AUTH_TOKEN: "${ANTHROPIC_AUTH_TOKEN:-}"

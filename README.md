@@ -12,10 +12,9 @@ It ships as a **single Docker image**: a FastAPI backend that serves both the AP
 and a Next.js front-end from one origin, with embedded SQLite for persistence. No
 external database, no cloud lock-in.
 
-> Originally a Hakkoda-tuned Cloudflare Worker, rebuilt as an open, self-hostable
-> app. The engine is **config-driven** — the domain terms, sources, thought
-> leaders, competitors, weights, and thresholds are all editable in the UI, so the
-> same engine works for any niche, not just enterprise AI/data.
+> The engine is **config-driven** — the domain terms, sources, thought leaders,
+> competitors, weights, and thresholds are all editable in the UI, so the same
+> engine works for any niche.
 
 ## Quickstart
 
@@ -25,7 +24,21 @@ docker compose up -d
 open http://localhost:8000
 ```
 
-`docker compose up` pulls the prebuilt multi-arch image from GHCR (amd64 + arm64).
+`docker compose up` pulls the prebuilt multi-arch image (amd64 + arm64) from the
+GitHub Container Registry:
+
+```
+ghcr.io/halfman-halfmachine/signal-scout:latest
+```
+
+The published package lives at
+<https://github.com/halfman-halfmachine/signal-scout/pkgs/container/signal-scout>.
+To pull it directly (e.g. for `docker run` or a custom orchestrator):
+
+```bash
+docker pull ghcr.io/halfman-halfmachine/signal-scout:latest
+```
+
 Your queue, learned engine state, config, and generated outputs persist in
 `./data` (a mounted volume), so they survive restarts.
 
@@ -43,8 +56,8 @@ All settings are optional environment variables (see `.env.example`):
 |---|---|---|
 | `SCOUT_PASSWORD` | _(unset)_ | Shared password. Unset = open access; set = login required. |
 | `ANTHROPIC_API_KEY` | _(unset)_ | Enables live LLM generation. Unset = structured template fallback. The key stays server-side. |
-| `ANTHROPIC_MODEL` | `claude-opus-4-5` | Claude model used for generation. |
-| `ANTHROPIC_BASE_URL` | `https://api.anthropic.com` | Anthropic-compatible API root. Override to route through a gateway (e.g. a Snowflake Cortex endpoint); `/v1/messages` is appended. |
+| `ANTHROPIC_MODEL` | `claude-haiku-4-5` | Claude model used for generation. |
+| `ANTHROPIC_BASE_URL` | `https://api.anthropic.com` | Anthropic-compatible API root. Override to route through a gateway (e.g. a corporate or self-hosted LLM gateway); `/v1/messages` is appended. |
 | `ANTHROPIC_AUTH_TOKEN` | _(unset)_ | Bearer token for gateways. When set, sent as `Authorization: Bearer ...` in place of `x-api-key`; also enables live generation. |
 | `SECRET_KEY` | _(random)_ | Signs session cookies. Set a stable value to keep logins valid across restarts. |
 | `DATA_DIR` | `/data` | Where the SQLite database lives (the mounted volume). |
@@ -52,8 +65,8 @@ All settings are optional environment variables (see `.env.example`):
 
 ## Retuning for your niche
 
-Signal Scout ships seeded for enterprise AI / data engineering, but nothing is
-hardcoded. In the UI:
+Signal Scout ships with a starter configuration, but nothing is hardcoded. In the
+UI:
 
 - **Ingestion Config** — point the sources (HN queries, subreddits, RSS feeds) at
   your domain.
@@ -90,7 +103,7 @@ Backend:
 cd backend
 python -m venv .venv && . .venv/bin/activate
 pip install -e ".[dev]"
-TZ=UTC python -m pytest -q          # run the test suite (incl. engine parity)
+TZ=UTC python -m pytest -q          # run the test suite
 DATA_DIR=./data uvicorn app.main:app --reload --port 8000
 ```
 
@@ -101,18 +114,6 @@ cd frontend
 npm install
 npm run dev                          # dev server (proxy /api to the backend)
 npm run build                        # static export -> frontend/out
-```
-
-### Engine parity
-
-The Python engine is a faithful port of the original `intelligence-engine.js`.
-`backend/tests/test_engine_parity.py` asserts identical scores, tiers, and ranking
-against golden values generated from the original JS:
-
-```bash
-cd backend
-TZ=UTC node tests/parity/gen_golden.mjs > tests/parity/golden.json
-TZ=UTC python -m pytest tests/test_engine_parity.py -q
 ```
 
 ## Running behind a reverse proxy (TLS)
@@ -132,4 +133,4 @@ forward cookies (the session cookie is `SameSite=Lax`, HttpOnly). Always set
 
 ## License
 
-Open source. See repository for details.
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE).

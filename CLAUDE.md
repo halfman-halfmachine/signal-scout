@@ -152,8 +152,8 @@ requires it. `/api/auth/*` and static assets stay public.
 |---|---|---|
 | `SCOUT_PASSWORD` | _(unset)_ | Shared password; unset = open access |
 | `ANTHROPIC_API_KEY` | _(unset)_ | Live generation; unset = template fallback |
-| `ANTHROPIC_MODEL` | `claude-opus-4-5` | Claude model |
-| `ANTHROPIC_BASE_URL` | `https://api.anthropic.com` | Anthropic-compatible API root; override for a gateway (e.g. Snowflake Cortex). `/v1/messages` is appended |
+| `ANTHROPIC_MODEL` | `claude-haiku-4-5` | Claude model |
+| `ANTHROPIC_BASE_URL` | `https://api.anthropic.com` | Anthropic-compatible API root; override for a gateway. `/v1/messages` is appended |
 | `ANTHROPIC_AUTH_TOKEN` | _(unset)_ | Bearer token for gateways; sent as `Authorization: Bearer ...` instead of `x-api-key`. Also enables live generation |
 | `SECRET_KEY` | _(random/process)_ | Signs session cookies; set for stable logins |
 | `DATA_DIR` | `/data` (`./data` local) | SQLite location |

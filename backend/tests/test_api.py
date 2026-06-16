@@ -138,9 +138,16 @@ def test_generate_template_fallback(client):
 
 
 def test_topics_lists_presets(client):
+    # Presets ship blank, so a fresh install lists no topics.
+    assert client.get("/api/topics").json()["topics"] == []
+
+    # Configured presets surface as selectable topics.
+    ing = client.get("/api/config/ingestion").json()
+    ing["presets"] = {"my-topic": {"label": "My Topic", "hn": ["q"], "reddit": "sub"}}
+    client.put("/api/config/ingestion", json={"data": ing})
+
     topics = client.get("/api/topics").json()["topics"]
-    keys = {t["key"] for t in topics}
-    assert {"frugal-ai", "agentic-ai", "data-engineering"} <= keys
+    assert {"key": "my-topic", "label": "My Topic"} in topics
 
 
 def test_persistence_across_reopen(client):

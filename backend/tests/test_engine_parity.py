@@ -16,6 +16,8 @@ from pathlib import Path
 
 from app.engine.engine import IntelligenceEngine
 
+from parity.reference_config import reference_engine_config
+
 GOLDEN = json.loads((Path(__file__).parent / "parity" / "golden.json").read_text())
 
 
@@ -78,7 +80,9 @@ TOL = 1e-9
 
 
 def _run():
-    engine = IntelligenceEngine()
+    # Inject the frozen reference config: production defaults are now blank,
+    # so parity must run against the Hakkoda config golden.json was built from.
+    engine = IntelligenceEngine(config=reference_engine_config())
     return engine.process_batch(FIXTURES, now_ms=GOLDEN["now"])
 
 

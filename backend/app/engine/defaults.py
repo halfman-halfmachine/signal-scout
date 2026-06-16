@@ -1,10 +1,21 @@
-"""Default engine configuration — ported verbatim from intelligence-engine.js.
+"""Default engine configuration — niche-agnostic blank slate.
 
-These constants are the *seed* for the niche-agnostic config stored in SQLite.
 The engine reads everything from an injected config dict (see engine.py); this
-module only supplies the defaults so a fresh install behaves exactly like the
-original Hakkoda-tuned Cloudflare Worker. Editing the config in the UI lets the
-same engine serve any niche with no code changes.
+module supplies only the *defaults* used to seed a fresh install. All niche
+specifics (thought leaders, domain terms, competitors, sources, source-trust
+seeds, conference calendar) ship **blank** so Signal Scout is domain-agnostic
+out of the box — an operator fills them in via the Config tabs.
+
+What is intentionally NOT blank:
+  - Mechanical scoring scaffolding (scoring_weights, routing_thresholds,
+    queue_threshold, platform_baselines, heat_multipliers) — the engine needs
+    these to score at all, and they are domain-independent.
+  - Generic, domain-agnostic vocab (noise_patterns, hype/trough/practical/
+    plateau hype-cycle words) — useful for any niche, editable in the UI.
+
+Every top-level key is kept present (the engine reads keys with bare access),
+just emptied where the value is niche-specific. The original Hakkoda-tuned
+values live in tests/parity/reference_config.py for the parity gate.
 """
 from __future__ import annotations
 
@@ -12,45 +23,21 @@ import copy
 from typing import Any
 
 DEFAULT_ENGINE_CONFIG: dict[str, Any] = {
-    # ── Layer 2: Thought Leader Watchlist ──────────────────────────────────
+    # ── Layer 2: Thought Leader Watchlist (names/handles/domains blank) ────
     "thought_leaders": {
-        "tier0": {
-            "weight": 0.97,
-            "names": ["andrej karpathy", "karpathy", "andrew ng", "andrewng",
-                      "jensen huang", "sam altman", "samaltman", "demis hassabis"],
-            "handles": ["@karpathy", "@andrewng", "@jensenh", "@sama", "@demishassabis"],
-        },
-        "tier1": {
-            "weight": 0.92,
-            "names": ["ibm research", "snowflake", "databricks", "anthropic", "openai", "caroline roche"],
-            "domains": ["research.ibm.com", "snowflake.com", "databricks.com",
-                        "anthropic.com", "openai.com"],
-        },
+        "tier0": {"weight": 0.97, "names": [], "handles": []},
+        "tier1": {"weight": 0.92, "names": [], "domains": []},
     },
 
     # ── Layer 4: source classification ─────────────────────────────────────
-    "analyst_orgs": [
-        "gartner", "forrester", "mckinsey", "idc", "everest group", "hfs research",
-        "hbr", "technologyreview", "harvard business review",
-    ],
-    "practitioner_domains": [
-        "news.ycombinator.com", "reddit.com", "stackoverflow.com",
-        "medium.com", "substack.com", "dev.to",
-    ],
+    "analyst_orgs": [],
+    "practitioner_domains": [],
 
     # ── Layer 5: Competitive Gap ───────────────────────────────────────────
-    "competitors": ["accenture", "deloitte", "mckinsey", "bcg", "pwc"],
+    "competitors": [],
 
     # ── Layer 6: Temporal / conference calendar ([month, day], 1-indexed) ──
-    "conference_calendar": [
-        {"name": "IBM Think",        "start": [5, 5],   "end": [5, 8],   "topics": ["enterprise ai", "cloud", "data", "watson"]},
-        {"name": "Google I/O",       "start": [5, 14],  "end": [5, 15],  "topics": ["ai", "ml", "gemini", "vertex"]},
-        {"name": "Data+AI Summit",   "start": [6, 9],   "end": [6, 12],  "topics": ["databricks", "spark", "lakehouse", "mlops"]},
-        {"name": "Snowflake Summit", "start": [6, 2],   "end": [6, 5],   "topics": ["snowflake", "data cloud", "analytics"]},
-        {"name": "Dreamforce",       "start": [9, 16],  "end": [9, 19],  "topics": ["salesforce", "crm", "ai", "data cloud"]},
-        {"name": "AWS re:Invent",    "start": [12, 1],  "end": [12, 5],  "topics": ["aws", "cloud", "data engineering"]},
-        {"name": "NeurIPS",          "start": [12, 9],  "end": [12, 15], "topics": ["ml", "ai research", "deep learning", "neural"]},
-    ],
+    "conference_calendar": [],
 
     # ── Scoring formula weights ────────────────────────────────────────────
     # Base weights (must sum to 1.0) plus the L1/L4 and L10/L5 input splits.
@@ -85,47 +72,23 @@ DEFAULT_ENGINE_CONFIG: dict[str, Any] = {
         "paper":    {"reactions": 20,  "comments": 5,  "shares": 15},
     },
 
-    # ── Layer 7: Source Trust seeds ────────────────────────────────────────
-    "source_initial_trust": {
-        "hbr.org": 0.88, "mit.edu": 0.90, "stanford.edu": 0.90,
-        "nature.com": 0.92, "arxiv.org": 0.85, "acm.org": 0.87,
-        "gartner.com": 0.82, "forrester.com": 0.82, "mckinsey.com": 0.80,
-        "news.ycombinator.com": 0.76, "reddit.com": 0.62, "medium.com": 0.58,
-        "dev.to": 0.60, "substack.com": 0.60,
-        "openai.com": 0.88, "anthropic.com": 0.88, "research.ibm.com": 0.87,
-        "snowflake.com": 0.80, "databricks.com": 0.80, "deepmind.google": 0.90,
-    },
+    # ── Layer 7: Source Trust seeds (blank — add domains in the UI) ─────────
+    "source_initial_trust": {},
 
     # ── Layer 10: domain relevance terms ───────────────────────────────────
-    "domain_terms": [
-        "snowflake", "databricks", "data engineering", "data platform", "lakehouse",
-        "data mesh", "data fabric", "mlops", "feature store", "data governance",
-        "ai governance", "enterprise ai", "ai implementation", "agentic ai",
-        "llm", "rag", "fine-tuning", "prompt engineering", "frugal ai",
-        "small language model", "data strategy", "modern data stack", "cloud data",
-        "data migration", "dbt", "airflow", "data quality", "observability",
-        "data catalog", "metadata management",
-    ],
+    "domain_terms": [],
     # Extra terms used only by ingestion topic extraction.
-    "tech_terms": [
-        "llm", "gpt", "claude", "gemini", "copilot", "agent", "rag", "fine-tun",
-        "snowflake", "databricks", "spark", "dbt", "airflow", "kafka",
-        "mlops", "feature store", "lakehouse", "medallion architecture",
-        "vector", "embedding", "inference", "quantization", "distillation",
-        "governance", "compliance", "data mesh", "data fabric",
-    ],
+    "tech_terms": [],
 
-    # ── Layer 11: Noise Filter (case-insensitive regex strings) ────────────
+    # ── Layer 11: Noise Filter (generic spam/PR regexes, case-insensitive) ─
     "noise_patterns": [
         r"^(press release|for immediate release|we are pleased|proud to announce|introducing our)",
         r"\b(sponsored|advertisement|advertorial|partner content|paid promotion)\b",
     ],
 
     # ── Layer 12: Hype Cycle vocab + mainstream domains ────────────────────
-    "mainstream_domains": [
-        "techcrunch.com", "forbes.com", "businessinsider.com", "wired.com", "theverge.com",
-        "venturebeat.com", "wsj.com", "nytimes.com", "zdnet.com", "fortune.com", "bloomberg.com",
-    ],
+    # mainstream_domains is niche (blank); the hype-cycle vocab is generic.
+    "mainstream_domains": [],
     "hype_vocab": ["revolutionary", "game-changing", "unprecedented", "disrupts", "breakthrough",
                    "transforms everything", "next big thing", "game changer"],
     "trough_vocab": ["fails", "overhyped", "reality check", "not ready", "limited", "disappointing",

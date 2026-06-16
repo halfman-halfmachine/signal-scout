@@ -2,10 +2,12 @@
 
 Network fetchers are exercised by the live full-loop verification, not here.
 """
-from app.engine.defaults import default_engine_config
 from app.ingestion.sources import _iso_ms, _slug, _strip_cat, extract_topics
 
-CFG = default_engine_config()
+from parity.reference_config import reference_engine_config
+
+# Production defaults are blank; topic-extraction tests need a populated config.
+CFG = reference_engine_config()
 
 
 def test_extract_topics_matches_domain_then_tech_terms():

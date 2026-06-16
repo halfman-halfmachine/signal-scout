@@ -1,8 +1,18 @@
-"""Default app-settings and ingestion config — ported from ssc-data.js.
+"""Default app-settings and ingestion config — niche-agnostic blank slate.
 
-These seed the `app_settings` and ingestion portions of `engine_config` on first
-run. Like the engine defaults they are niche-specific only as a starting point;
-everything is editable in the UI.
+Seeds the `app_settings` and `ingestion` sections of `engine_config` on first
+run. Niche-specific seeds ship **blank** so a fresh install is domain-agnostic:
+  - ingestion: all feeds/queries/presets empty.
+  - app_settings.lenses: empty.
+  - app_settings.personas: empty.
+
+Kept seeded because they are generic / structural, not niche-specific (and the
+UI + generation logic depend on them):
+  - LAYERS: the 12-layer slider/toggle UI metadata.
+  - frameworks, output_types, social_platforms, input_modes, pov_options,
+    output_defaults_by_mode: domain-agnostic content-generation catalogs.
+
+All editable in the UI.
 """
 from __future__ import annotations
 
@@ -81,88 +91,19 @@ SOCIAL_PLATFORMS = [
     {"id": "tiktok", "name": "TikTok"},
 ]
 
-DEFAULT_PRESETS = {
-    "frugal-ai": {
-        "label": "Frugal AI",
-        "hn": ["frugal AI LLM inference efficiency cost",
-               "small language model SLM on-device edge deployment",
-               "LLM quantization compression distillation inference",
-               "efficient AI GPU-poor budget enterprise deployment",
-               "LLM cost reduction inference optimization enterprise"],
-        "reddit": "LocalLLaMA+MachineLearning+artificial+datascience",
-    },
-    "agentic-ai": {
-        "label": "Agentic AI",
-        "hn": ["agentic AI workflow automation enterprise production",
-               "multi-agent LLM orchestration framework deployment",
-               "autonomous AI agent tool use coding pipeline",
-               "agentic data engineering RAG enterprise workflow",
-               "AI agent memory planning reasoning production"],
-        "reddit": "MachineLearning+artificial+LocalLLaMA+dataengineering",
-    },
-    "data-engineering": {
-        "label": "Data Engineering",
-        "hn": ["Snowflake Databricks data engineering lakehouse",
-               "dbt data mesh modern data stack medallion architecture",
-               "MLOps feature store data quality observability",
-               "data governance enterprise AI production deployment",
-               "data platform strategy cloud migration modernization"],
-        "reddit": "dataengineering+snowflake+dbt+MachineLearning+datascience",
-    },
-}
-
+# Ingestion ships blank: operators configure their own sources/queries/presets.
 DEFAULT_INGESTION = {
-    "hn_queries": [
-        "enterprise AI data platform strategy",
-        "agentic AI workflow automation",
-        "LLM efficiency frugal AI inference",
-        "Snowflake Databricks lakehouse data engineering",
-        "AI governance data quality observability",
-        "small language model SLM deployment",
-        "MLOps feature store production AI",
-        "RAG retrieval augmented generation enterprise",
-    ],
-    "reddit_subs": "MachineLearning+LocalLLaMA+datascience+artificial+dataengineering+snowflake+dbt",
-    "arxiv_feeds": [
-        "https://export.arxiv.org/rss/cs.AI",
-        "https://export.arxiv.org/rss/cs.LG",
-    ],
-    "analyst_feeds": [
-        {"name": "MIT Technology Review", "domain": "technologyreview.com", "url": "https://www.technologyreview.com/feed/"},
-        {"name": "Harvard Business Review", "domain": "hbr.org", "url": "https://feeds.hbr.org/harvardbusiness"},
-    ],
-    "competitor_feeds": [
-        {"name": "Accenture", "domain": "accenture.com", "url": "https://newsroom.accenture.com/rss/"},
-        {"name": "Deloitte", "domain": "deloitte.com", "url": "https://www2.deloitte.com/global/en/insights/rss.xml"},
-        {"name": "McKinsey & Company", "domain": "mckinsey.com", "url": "https://www.mckinsey.com/featured-insights/rss"},
-        {"name": "PwC", "domain": "pwc.com", "url": "https://www.pwc.com/gx/en/rss/insights.xml"},
-        {"name": "BCG", "domain": "bcg.com", "url": "https://www.bcg.com/rss/insights.xml"},
-    ],
-    "news_feeds": [
-        {"name": "TechCrunch AI", "domain": "techcrunch.com", "url": "https://techcrunch.com/category/artificial-intelligence/feed/"},
-        {"name": "VentureBeat AI", "domain": "venturebeat.com", "url": "https://venturebeat.com/category/ai/feed/"},
-    ],
-    "presets": DEFAULT_PRESETS,
+    "hn_queries": [],
+    "reddit_subs": "",
+    "arxiv_feeds": [],
+    "analyst_feeds": [],
+    "competitor_feeds": [],
+    "news_feeds": [],
+    "presets": {},
 }
 
-DEFAULT_LENSES = [
-    {"id": "frugal-ai", "name": "Frugal AI", "weight": 0.90, "active": False,
-     "keywords": ["frugal ai", "llm inference cost", "small language model", "quantization", "model distillation",
-                  "on-device llm", "gpu-poor", "cost-aware inference", "right-sized models", "inference optimization"]},
-    {"id": "lean-ai", "name": "Lean AI", "weight": 0.85, "active": False,
-     "keywords": ["lean ai", "efficient ai", "minimal viable model", "resource-constrained ai", "sustainable ai",
-                  "energy-efficient inference", "model pruning", "edge ai", "low-latency inference"]},
-    {"id": "context-layer", "name": "Context Layer", "weight": 0.92, "active": False,
-     "keywords": ["context layer", "semantic layer", "data context", "context engineering", "rag",
-                  "retrieval augmented generation", "knowledge graph", "data semantics", "context window", "grounding"]},
-    {"id": "agentic-ai", "name": "Agentic AI", "weight": 0.85, "active": False,
-     "keywords": ["agentic ai", "ai agent", "multi-agent", "autonomous agent", "agent orchestration",
-                  "tool use", "agent memory", "workflow automation", "agent planning"]},
-    {"id": "data-engineering", "name": "Data Engineering / Core", "weight": 0.80, "active": False,
-     "keywords": ["snowflake", "databricks", "data engineering", "data platform", "lakehouse", "data mesh",
-                  "data fabric", "mlops", "feature store", "data governance", "dbt", "airflow", "data quality",
-                  "observability", "data catalog", "metadata management", "modern data stack"]},
-]
+# Lenses ship blank: operators define their own keyword lenses in the UI.
+DEFAULT_LENSES: list[dict[str, Any]] = []
 
 INPUT_MODES = [
     {"id": "market-signal", "icon": "&#128225;", "name": "Market Signal", "desc": "Automated ingestion, scored and routed by the 12-layer engine."},
@@ -181,28 +122,8 @@ POV_OPTIONS = [
     {"id": "custom", "name": "Custom Spin", "desc": "User-defined angle or specific framing"},
 ]
 
-DEFAULT_PERSONAS = [
-    {"id": "enterprise-cdo", "name": "Enterprise CDO / CIO", "archetype": "Executive Buyer",
-     "description": "VP/C-level data or technology leader at a large enterprise, accountable for data strategy and AI ROI to the board.",
-     "painPoints": ["Proving AI ROI to the board", "Data quality and governance debt", "Vendor sprawl and integration cost"],
-     "tone": "Executive, concise, ROI-focused", "formatPref": "Executive summary, LinkedIn article, talk track",
-     "platform": "LinkedIn, conference", "ctaType": "Book a strategy call", "custom": False},
-    {"id": "senior-data-engineer", "name": "Senior Data Engineer", "archetype": "Practitioner",
-     "description": "Hands-on engineer building and maintaining the data platform (Snowflake, Databricks, dbt, Airflow).",
-     "painPoints": ["Pipeline reliability and cost", "Tooling fatigue", "Keeping up with new frameworks"],
-     "tone": "Technical, direct, no fluff", "formatPref": "Deep-dive article, technical carousel",
-     "platform": "Reddit, LinkedIn, Hacker News", "ctaType": "Read the technical breakdown", "custom": False},
-    {"id": "industry-analyst", "name": "Industry Analyst / Press", "archetype": "Influencer",
-     "description": "Analyst or journalist covering enterprise AI and data trends, independent newsletter or research firm.",
-     "painPoints": ["Finding differentiated narratives", "Access to real customer data", "Separating signal from hype"],
-     "tone": "Balanced, evidence-based, citation-heavy", "formatPref": "Trend piece, data-driven post",
-     "platform": "Substack, LinkedIn, press", "ctaType": "Subscribe / cite source", "custom": False},
-    {"id": "sales-prospect", "name": "Sales Prospect (Mid-Market IT Director)", "archetype": "Buyer / Champion",
-     "description": "IT or data director evaluating vendors, influences but does not always hold final budget authority.",
-     "painPoints": ["Justifying spend internally", "Risk of choosing the wrong vendor", "Limited internal bandwidth"],
-     "tone": "Practical, reassuring, peer-to-peer", "formatPref": "Case study, discovery call talk track",
-     "platform": "LinkedIn, email, discovery call", "ctaType": "Schedule a discovery call", "custom": False},
-]
+# Personas ship blank: operators define their own target audiences in the UI.
+DEFAULT_PERSONAS: list[dict[str, Any]] = []
 
 OUTPUT_DEFAULTS_BY_MODE = {
     "market-signal": ["social-post", "short-form-video-talking", "podcast"],

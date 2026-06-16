@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { api } from '@/lib/api';
-import type { IngestionConfig, IngestMeta, Topic } from '@/lib/types';
+import type { IngestionConfig, IngestionPreset, IngestMeta, Topic } from '@/lib/types';
 
 export default function IngestionTab() {
   const [config, setConfig] = useState<IngestionConfig | null>(null);
@@ -89,6 +89,8 @@ export default function IngestionTab() {
         <FeedEditor label="Analyst Feeds" feeds={config.analyst_feeds} onChange={(feeds) => setConfig({ ...config, analyst_feeds: feeds })} />
       </div>
 
+      <PresetsEditor presets={config.presets} onChange={(p) => setConfig({ ...config, presets: p })} />
+
       <div className="card mt-4">
         <h3 style={{ fontSize: 14, marginBottom: 8 }}>Run Ingest Now</h3>
         <div className="flex">
@@ -128,6 +130,58 @@ function ListEditor({ label, items, onChange }: { label: string; items: string[]
         {items.map((item, i) => (
           <span key={i} className="tag">{item}<span className="remove" onClick={() => onChange(items.filter((_, j) => j !== i))}>×</span></span>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function PresetsEditor({ presets, onChange }: { presets: Record<string, IngestionPreset>; onChange: (v: Record<string, IngestionPreset>) => void }) {
+  const [key, setKey] = useState('');
+
+  const add = () => {
+    const k = key.trim().toLowerCase().replace(/\s+/g, '-');
+    if (!k || presets[k]) return;
+    onChange({ ...presets, [k]: { label: key.trim(), hn: [], reddit: '' } });
+    setKey('');
+  };
+  const remove = (k: string) => {
+    const next = { ...presets };
+    delete next[k];
+    onChange(next);
+  };
+  const update = (k: string, patch: Partial<IngestionPreset>) =>
+    onChange({ ...presets, [k]: { ...presets[k], ...patch } });
+
+  return (
+    <div className="card mt-4">
+      <div className="flex-between mb-2">
+        <div>
+          <h3 style={{ fontSize: 14 }}>Topic Presets</h3>
+          <p className="dim small">Focused ingestion bundles. Selecting a topic on Run Ingest swaps in that preset&apos;s queries.</p>
+        </div>
+        <div className="flex">
+          <input value={key} onChange={(e) => setKey(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), add())} placeholder="New topic key" style={{ width: 160 }} />
+          <button onClick={add} type="button">+ Add Preset</button>
+        </div>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {Object.entries(presets).map(([k, p]) => (
+          <div key={k} className="card">
+            <div className="flex-between">
+              <div className="grid-2" style={{ flex: 1, gap: 8 }}>
+                <div><label>Topic Key (id)</label><input value={k} disabled style={{ opacity: 0.6 }} /></div>
+                <div><label>Label</label><input value={p.label} onChange={(e) => update(k, { label: e.target.value })} /></div>
+              </div>
+              <button onClick={() => remove(k)} style={{ color: 'var(--error)', border: 'none', marginLeft: 8 }}>Remove</button>
+            </div>
+            <div className="mt-2">
+              <label>Reddit Subs (comma-separated)</label>
+              <input value={p.reddit} onChange={(e) => update(k, { reddit: e.target.value })} />
+            </div>
+            <ListEditor label="HN Queries" items={p.hn} onChange={(v) => update(k, { hn: v })} />
+          </div>
+        ))}
+        {Object.keys(presets).length === 0 && <p className="dim small">No presets. Add a topic key to create a focused ingestion bundle.</p>}
       </div>
     </div>
   );

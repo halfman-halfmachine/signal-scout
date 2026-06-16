@@ -40,6 +40,12 @@ export interface AnalystFeed {
   url: string;
 }
 
+export interface IngestionPreset {
+  label: string;
+  hn: string[];
+  reddit: string;
+}
+
 export interface IngestionConfig {
   hn_queries: string[];
   reddit_subs: string;
@@ -47,7 +53,7 @@ export interface IngestionConfig {
   analyst_feeds: AnalystFeed[];
   competitor_feeds: AnalystFeed[];
   news_feeds: AnalystFeed[];
-  presets: Record<string, unknown>;
+  presets: Record<string, IngestionPreset>;
 }
 
 export interface OutputType {
@@ -112,14 +118,31 @@ export interface ThoughtLeaderTier {
   domains?: string[];
 }
 
+export interface PlatformBaseline {
+  reactions: number;
+  comments: number;
+  shares: number;
+}
+
 export interface EngineConfig {
   scoring_weights: Record<string, number>;
   routing_thresholds: Record<string, number>;
   queue_threshold: number;
   domain_terms: string[];
+  tech_terms: string[];
   thought_leaders: { tier0: ThoughtLeaderTier; tier1: ThoughtLeaderTier };
   competitors: string[];
+  analyst_orgs: string[];
+  practitioner_domains: string[];
+  mainstream_domains: string[];
   source_initial_trust: Record<string, number>;
+  noise_patterns: string[];
+  hype_vocab: string[];
+  trough_vocab: string[];
+  practical_vocab: string[];
+  plateau_vocab: string[];
+  platform_baselines: Record<string, PlatformBaseline>;
+  heat_multipliers: number[];
   conference_calendar: ConferenceEntry[];
 }
 

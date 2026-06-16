@@ -141,15 +141,18 @@ async def generate(body: GenerateRequest) -> dict:
     ctx = services.resolve_generate_context(body.model_dump())
     output_types = body.output_types or ["social-post"]
     outputs = []
-    for ot_id in output_types:
-        octx = services.ctx_for_output(ctx, ot_id)
-        out = await llm.generate_one(octx, ot_id, variant=body.variant)
-        db.save_output({
-            "id": out["id"], "signal_id": body.signal_id, "output_type": ot_id,
-            "framework": out["framework"], "content": out["content"],
-            "is_live": out["is_live"], "meta": {"variant": out["variant"]},
-        })
-        outputs.append(out)
+    try:
+        for ot_id in output_types:
+            octx = services.ctx_for_output(ctx, ot_id)
+            out = await llm.generate_one(octx, ot_id, variant=body.variant)
+            db.save_output({
+                "id": out["id"], "signal_id": body.signal_id, "output_type": ot_id,
+                "framework": out["framework"], "content": out["content"],
+                "is_live": out["is_live"], "meta": {"variant": out["variant"]},
+            })
+            outputs.append(out)
+    except RuntimeError as e:
+        raise HTTPException(502, f"Generation failed: {e}")
     return {"outputs": outputs}
 
 

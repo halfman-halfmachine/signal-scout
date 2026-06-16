@@ -19,7 +19,7 @@ def build_api_body(ctx: dict, output_type_id: str, extra: str = "") -> dict:
         "max_tokens": config.ANTHROPIC_MAX_TOKENS,
         "messages": [{"role": "user", "content": P.build_prompt(ctx, output_type_id) + (extra or "")}],
     }
-    if ctx.get("web_research"):
+    if ctx.get("web_research") and config.web_search_supported():
         body["tools"] = [{"type": "web_search_20250305", "name": "web_search", "max_uses": 3}]
     return body
 

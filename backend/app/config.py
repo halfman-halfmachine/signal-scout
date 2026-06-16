@@ -33,6 +33,11 @@ ANTHROPIC_AUTH_TOKEN = os.environ.get("ANTHROPIC_AUTH_TOKEN", "").strip()
 ANTHROPIC_MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-opus-4-5").strip()
 ANTHROPIC_MAX_TOKENS = int(os.environ.get("ANTHROPIC_MAX_TOKENS", "2800"))
 
+# Whether to advertise the Anthropic `web_search` server tool. Only the native
+# Anthropic API supports it; most compatible gateways (e.g. Snowflake Cortex)
+# reject it with a 400. Auto-detect from the endpoint unless explicitly set.
+ANTHROPIC_WEB_SEARCH = os.environ.get("ANTHROPIC_WEB_SEARCH", "").strip().lower()
+
 # Secret used to sign session cookies. Auto-generated per-process if unset,
 # which logs everyone out on restart but keeps things zero-config.
 SECRET_KEY = os.environ.get("SECRET_KEY", "").strip() or os.urandom(32).hex()
@@ -53,6 +58,19 @@ def auth_enabled() -> bool:
 def llm_enabled() -> bool:
     """Live generation is possible when either an API key or bearer token is set."""
     return bool(ANTHROPIC_API_KEY or ANTHROPIC_AUTH_TOKEN)
+
+
+def web_search_supported() -> bool:
+    """Whether to send the Anthropic `web_search` server tool.
+
+    Explicit override via ANTHROPIC_WEB_SEARCH wins; otherwise only the native
+    Anthropic API is assumed to support it (gateways generally reject it).
+    """
+    if ANTHROPIC_WEB_SEARCH in ("1", "true", "yes", "on"):
+        return True
+    if ANTHROPIC_WEB_SEARCH in ("0", "false", "no", "off"):
+        return False
+    return "api.anthropic.com" in ANTHROPIC_BASE_URL
 
 
 def ensure_dirs() -> None:

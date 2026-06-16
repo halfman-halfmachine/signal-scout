@@ -64,6 +64,24 @@ def test_api_body_omits_tool_when_disabled():
     assert "tools" not in body
 
 
+def test_api_body_omits_web_search_tool_on_gateway(monkeypatch):
+    # Gateways (e.g. Snowflake Cortex) reject the web_search server tool, so it
+    # must be omitted even when web_research is requested.
+    monkeypatch.setattr(config, "ANTHROPIC_BASE_URL", "https://gw.example.com/api/v2/cortex")
+    monkeypatch.setattr(config, "ANTHROPIC_WEB_SEARCH", "")
+    body = C.build_api_body(CTX, "social-post")
+    assert "tools" not in body
+
+
+def test_web_search_env_override(monkeypatch):
+    monkeypatch.setattr(config, "ANTHROPIC_BASE_URL", "https://gw.example.com/api/v2/cortex")
+    monkeypatch.setattr(config, "ANTHROPIC_WEB_SEARCH", "true")
+    assert config.web_search_supported() is True
+    monkeypatch.setattr(config, "ANTHROPIC_BASE_URL", "https://api.anthropic.com")
+    monkeypatch.setattr(config, "ANTHROPIC_WEB_SEARCH", "false")
+    assert config.web_search_supported() is False
+
+
 def test_citation_extraction_appends_sources():
     data = {"content": [
         {"type": "text", "text": "Body text.", "citations": [

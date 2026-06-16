@@ -1,0 +1,30 @@
+# Signal Scout — self-hosted deployment.
+#
+# Quickstart (pulls the prebuilt image from GHCR):
+#   1. cp .env.example .env  &&  edit .env
+#   2. docker compose up -d
+#   3. open http://localhost:8000
+#
+# Build from source instead of pulling:
+#   docker compose up -d --build
+
+services:
+  signal-scout:
+    # Replace OWNER with your GitHub org/user, or use --build to build locally.
+    image: ghcr.io/OWNER/signal-scout:latest
+    build: .
+    container_name: signal-scout
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      # Optional shared password. Leave unset for open access.
+      SCOUT_PASSWORD: "${SCOUT_PASSWORD:-}"
+      # Optional Anthropic key. Without it, generation falls back to templates.
+      ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY:-}"
+      ANTHROPIC_MODEL: "${ANTHROPIC_MODEL:-claude-opus-4-5}"
+      # Stable secret keeps sessions valid across restarts (auto-generated if unset).
+      SECRET_KEY: "${SECRET_KEY:-}"
+      DATA_DIR: /data
+    volumes:
+      - ./data:/data
+    restart: unless-stopped

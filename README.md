@@ -1,6 +1,6 @@
 # Signal Scout
 
-Self-hostable, niche-agnostic **market-signal intelligence system**.
+Self-hostable, niche-agnostic **Market-Signal Intelligence System**.
 
 Signal Scout ingests items from public sources (Hacker News, Reddit, arXiv,
 analyst/competitor/news RSS, Google News), scores each one through a 12-layer

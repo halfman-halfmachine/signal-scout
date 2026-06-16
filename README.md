@@ -44,6 +44,8 @@ All settings are optional environment variables (see `.env.example`):
 | `SCOUT_PASSWORD` | _(unset)_ | Shared password. Unset = open access; set = login required. |
 | `ANTHROPIC_API_KEY` | _(unset)_ | Enables live LLM generation. Unset = structured template fallback. The key stays server-side. |
 | `ANTHROPIC_MODEL` | `claude-opus-4-5` | Claude model used for generation. |
+| `ANTHROPIC_BASE_URL` | `https://api.anthropic.com` | Anthropic-compatible API root. Override to route through a gateway (e.g. a Snowflake Cortex endpoint); `/v1/messages` is appended. |
+| `ANTHROPIC_AUTH_TOKEN` | _(unset)_ | Bearer token for gateways. When set, sent as `Authorization: Bearer ...` in place of `x-api-key`; also enables live generation. |
 | `SECRET_KEY` | _(random)_ | Signs session cookies. Set a stable value to keep logins valid across restarts. |
 | `DATA_DIR` | `/data` | Where the SQLite database lives (the mounted volume). |
 | `PORT` | `8000` | Host port to expose. |

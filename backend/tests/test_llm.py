@@ -5,6 +5,7 @@ without calling Anthropic (no network, no API key).
 """
 from app.llm import client as C
 from app.llm import prompt as P
+from app import config
 
 CTX = {
     "signal": {
@@ -79,3 +80,33 @@ def test_citation_extraction_appends_sources():
 def test_variant_adds_differentiation_note():
     body = C.build_api_body(CTX, "social-post", "\n\nThis is variant 2.")
     assert "This is variant 2." in body["messages"][0]["content"]
+
+
+def test_default_endpoint_and_api_key_auth(monkeypatch):
+    monkeypatch.setattr(config, "ANTHROPIC_BASE_URL", "https://api.anthropic.com")
+    monkeypatch.setattr(config, "ANTHROPIC_AUTH_TOKEN", "")
+    monkeypatch.setattr(config, "ANTHROPIC_API_KEY", "sk-test")
+    assert C._messages_url() == "https://api.anthropic.com/v1/messages"
+    headers = C._request_headers()
+    assert headers["x-api-key"] == "sk-test"
+    assert "authorization" not in headers
+    assert headers["anthropic-version"] == "2023-06-01"
+
+
+def test_gateway_base_url_and_bearer_auth(monkeypatch):
+    monkeypatch.setattr(config, "ANTHROPIC_BASE_URL", "https://gw.example.com/api/v2/cortex")
+    monkeypatch.setattr(config, "ANTHROPIC_AUTH_TOKEN", "tok-123")
+    monkeypatch.setattr(config, "ANTHROPIC_API_KEY", "")
+    assert C._messages_url() == "https://gw.example.com/api/v2/cortex/v1/messages"
+    headers = C._request_headers()
+    assert headers["authorization"] == "Bearer tok-123"
+    assert "x-api-key" not in headers
+
+
+def test_llm_enabled_with_token_only(monkeypatch):
+    monkeypatch.setattr(config, "ANTHROPIC_API_KEY", "")
+    monkeypatch.setattr(config, "ANTHROPIC_AUTH_TOKEN", "tok-123")
+    assert config.llm_enabled() is True
+
+    monkeypatch.setattr(config, "ANTHROPIC_AUTH_TOKEN", "")
+    assert config.llm_enabled() is False

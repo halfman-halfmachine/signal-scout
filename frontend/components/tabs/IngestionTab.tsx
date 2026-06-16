@@ -84,9 +84,9 @@ export default function IngestionTab() {
           <input value={config.reddit_subs} onChange={(e) => setConfig({ ...config, reddit_subs: e.target.value })} />
         </div>
         <ListEditor label="Arxiv Feeds" items={config.arxiv_feeds} onChange={(v) => updateList('arxiv_feeds', v)} />
-        <ListEditor label="Competitor Feeds" items={config.competitor_feeds} onChange={(v) => updateList('competitor_feeds', v)} />
-        <ListEditor label="News Feeds" items={config.news_feeds} onChange={(v) => updateList('news_feeds', v)} />
-        <AnalystFeedEditor feeds={config.analyst_feeds} onChange={(feeds) => setConfig({ ...config, analyst_feeds: feeds })} />
+        <FeedEditor label="Competitor Feeds" feeds={config.competitor_feeds} onChange={(feeds) => setConfig({ ...config, competitor_feeds: feeds })} />
+        <FeedEditor label="News Feeds" feeds={config.news_feeds} onChange={(feeds) => setConfig({ ...config, news_feeds: feeds })} />
+        <FeedEditor label="Analyst Feeds" feeds={config.analyst_feeds} onChange={(feeds) => setConfig({ ...config, analyst_feeds: feeds })} />
       </div>
 
       <div className="card mt-4">
@@ -133,7 +133,7 @@ function ListEditor({ label, items, onChange }: { label: string; items: string[]
   );
 }
 
-function AnalystFeedEditor({ feeds, onChange }: { feeds: { name: string; domain: string; url: string }[]; onChange: (v: { name: string; domain: string; url: string }[]) => void }) {
+function FeedEditor({ label, feeds, onChange }: { label: string; feeds: { name: string; domain: string; url: string }[]; onChange: (v: { name: string; domain: string; url: string }[]) => void }) {
   const [name, setName] = useState('');
   const [domain, setDomain] = useState('');
   const [url, setUrl] = useState('');
@@ -144,7 +144,7 @@ function AnalystFeedEditor({ feeds, onChange }: { feeds: { name: string; domain:
 
   return (
     <div>
-      <label>Analyst Feeds</label>
+      <label>{label}</label>
       <div className="flex mb-2" style={{ gap: 4 }}>
         <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" style={{ width: '30%' }} />
         <input value={domain} onChange={(e) => setDomain(e.target.value)} placeholder="Domain" style={{ width: '25%' }} />

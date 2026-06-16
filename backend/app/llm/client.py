@@ -43,17 +43,27 @@ def extract_content_with_citations(data: dict) -> str:
     return content
 
 
+def _messages_url() -> str:
+    return f"{config.ANTHROPIC_BASE_URL}/v1/messages"
+
+
+def _request_headers() -> dict:
+    """Auth via bearer token when configured (gateways), else x-api-key."""
+    headers = {"content-type": "application/json", "anthropic-version": "2023-06-01"}
+    if config.ANTHROPIC_AUTH_TOKEN:
+        headers["authorization"] = f"Bearer {config.ANTHROPIC_AUTH_TOKEN}"
+    else:
+        headers["x-api-key"] = config.ANTHROPIC_API_KEY
+    return headers
+
+
 async def _call_anthropic(body: dict) -> dict:
     """Call the Anthropic Messages API. Uses the SDK if available, else httpx."""
     import httpx
     async with httpx.AsyncClient(timeout=httpx.Timeout(120.0, connect=10.0)) as client:
         r = await client.post(
-            "https://api.anthropic.com/v1/messages",
-            headers={
-                "content-type": "application/json",
-                "x-api-key": config.ANTHROPIC_API_KEY,
-                "anthropic-version": "2023-06-01",
-            },
+            _messages_url(),
+            headers=_request_headers(),
             json=body,
         )
         if r.status_code != 200:
@@ -75,7 +85,7 @@ async def generate_one(ctx: dict, output_type_id: str, variant: int = 0) -> dict
              f"\n\nThis is variant {variant + 1}. Produce a meaningfully different angle, "
              f"hook, or structure than a typical first attempt.")
 
-    if config.ANTHROPIC_API_KEY:
+    if config.llm_enabled():
         data = await _call_anthropic(build_api_body(ctx, output_type_id, extra))
         content = extract_content_with_citations(data)
         is_live = True

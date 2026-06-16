@@ -34,7 +34,7 @@ app.include_router(api_router)
 def health() -> dict:
     return {"status": "ok", "name": "Signal Scout", "version": "1.0.0",
             "auth_required": config.auth_enabled(),
-            "llm": "live" if config.ANTHROPIC_API_KEY else "template"}
+            "llm": "live" if config.llm_enabled() else "template"}
 
 
 def _mount_static() -> None:

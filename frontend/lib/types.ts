@@ -45,19 +45,71 @@ export interface IngestionConfig {
   reddit_subs: string;
   arxiv_feeds: string[];
   analyst_feeds: AnalystFeed[];
-  competitor_feeds: string[];
-  news_feeds: string[];
+  competitor_feeds: AnalystFeed[];
+  news_feeds: AnalystFeed[];
   presets: Record<string, unknown>;
+}
+
+export interface OutputType {
+  id: string;
+  icon: string;
+  name: string;
+  desc: string;
+}
+
+export interface SocialPlatform {
+  id: string;
+  name: string;
+}
+
+export interface InputMode {
+  id: string;
+  icon: string;
+  name: string;
+  desc: string;
+}
+
+export interface PovOption {
+  id: string;
+  name: string;
+  desc: string;
+}
+
+export interface Persona {
+  id: string;
+  name: string;
+  archetype: string;
+  description: string;
+  painPoints: string[];
+  tone: string;
+  formatPref: string;
+  platform: string;
+  ctaType: string;
+  custom: boolean;
 }
 
 export interface AppSettings {
   lenses: Lens[];
   frameworks: Framework[];
-  output_types: string[];
-  social_platforms: string[];
-  input_modes: string[];
-  personas: string[];
-  pov_options: string[];
+  output_types: OutputType[];
+  social_platforms: SocialPlatform[];
+  input_modes: InputMode[];
+  personas: Persona[];
+  pov_options: PovOption[];
+}
+
+export interface ConferenceEntry {
+  name: string;
+  start: [number, number];
+  end: [number, number];
+  topics: string[];
+}
+
+export interface ThoughtLeaderTier {
+  weight: number;
+  names: string[];
+  handles?: string[];
+  domains?: string[];
 }
 
 export interface EngineConfig {
@@ -65,10 +117,10 @@ export interface EngineConfig {
   routing_thresholds: Record<string, number>;
   queue_threshold: number;
   domain_terms: string[];
-  thought_leaders: string[];
+  thought_leaders: { tier0: ThoughtLeaderTier; tier1: ThoughtLeaderTier };
   competitors: string[];
   source_initial_trust: Record<string, number>;
-  conference_calendar: string[];
+  conference_calendar: ConferenceEntry[];
 }
 
 export interface GenerateOutput {

@@ -19,6 +19,16 @@ SCOUT_PASSWORD = os.environ.get("SCOUT_PASSWORD", "").strip()
 # Anthropic API key. When unset, /api/generate falls back to template output.
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "").strip()
 
+# Base URL for the Anthropic-compatible API. Override to route through a gateway
+# (e.g. a Snowflake Cortex Anthropic endpoint). "/v1/messages" is appended.
+ANTHROPIC_BASE_URL = os.environ.get(
+    "ANTHROPIC_BASE_URL", "https://api.anthropic.com"
+).strip().rstrip("/")
+
+# Bearer token for gateways that authenticate via "Authorization: Bearer"
+# instead of "x-api-key". When set, it is used for auth in place of the API key.
+ANTHROPIC_AUTH_TOKEN = os.environ.get("ANTHROPIC_AUTH_TOKEN", "").strip()
+
 # Claude model + token budget (kept overridable for cost control).
 ANTHROPIC_MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-opus-4-5").strip()
 ANTHROPIC_MAX_TOKENS = int(os.environ.get("ANTHROPIC_MAX_TOKENS", "2800"))
@@ -38,6 +48,11 @@ USER_AGENT = os.environ.get("SCOUT_USER_AGENT", "signal-scout/1.0")
 
 def auth_enabled() -> bool:
     return bool(SCOUT_PASSWORD)
+
+
+def llm_enabled() -> bool:
+    """Live generation is possible when either an API key or bearer token is set."""
+    return bool(ANTHROPIC_API_KEY or ANTHROPIC_AUTH_TOKEN)
 
 
 def ensure_dirs() -> None:

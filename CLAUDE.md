@@ -80,7 +80,22 @@ not the golden file.
 
 ## Commands
 
-Backend:
+**Quickstart (recommended): `scripts/dev.sh`.** Loads `.env` from the repo root,
+then runs the backend. First local run auto-creates the venv and installs deps;
+forces `TZ=UTC`.
+```bash
+scripts/dev.sh              # local uvicorn + --reload at http://localhost:8000
+scripts/dev.sh --no-reload  # local, no autoreload
+scripts/dev.sh --docker     # full stack via docker compose (compose reads .env itself)
+scripts/dev.sh --help
+PORT=9000 scripts/dev.sh    # real env vars override .env
+```
+Config comes from `.env` (gitignored; copy from `.env.example`). It prints a
+startup banner showing the resolved LLM mode — `template`, `live via
+api.anthropic.com`, or `live via gateway: <ANTHROPIC_BASE_URL>` when
+`ANTHROPIC_AUTH_TOKEN` is set (see the gateway env vars below).
+
+Backend (manual):
 ```bash
 cd backend
 python -m venv .venv && . .venv/bin/activate
@@ -138,6 +153,8 @@ requires it. `/api/auth/*` and static assets stay public.
 | `SCOUT_PASSWORD` | _(unset)_ | Shared password; unset = open access |
 | `ANTHROPIC_API_KEY` | _(unset)_ | Live generation; unset = template fallback |
 | `ANTHROPIC_MODEL` | `claude-opus-4-5` | Claude model |
+| `ANTHROPIC_BASE_URL` | `https://api.anthropic.com` | Anthropic-compatible API root; override for a gateway (e.g. Snowflake Cortex). `/v1/messages` is appended |
+| `ANTHROPIC_AUTH_TOKEN` | _(unset)_ | Bearer token for gateways; sent as `Authorization: Bearer ...` instead of `x-api-key`. Also enables live generation |
 | `SECRET_KEY` | _(random/process)_ | Signs session cookies; set for stable logins |
 | `DATA_DIR` | `/data` (`./data` local) | SQLite location |
 | `STATIC_DIR` | `/app/static` | Built front-end location |

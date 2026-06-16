@@ -114,9 +114,28 @@ export default function EngineTab() {
           ))}
 
           <EditableList label="Domain Terms" items={config.domain_terms} onChange={(v) => updateList('domain_terms', v)} />
-          <EditableList label="Thought Leaders" items={config.thought_leaders} onChange={(v) => updateList('thought_leaders', v)} />
+          <EditableList
+            label="Thought Leaders (Tier 0)"
+            items={config.thought_leaders.tier0.names}
+            onChange={(v) => setConfig({ ...config, thought_leaders: { ...config.thought_leaders, tier0: { ...config.thought_leaders.tier0, names: v } } })}
+          />
+          <EditableList
+            label="Thought Leaders (Tier 1)"
+            items={config.thought_leaders.tier1.names}
+            onChange={(v) => setConfig({ ...config, thought_leaders: { ...config.thought_leaders, tier1: { ...config.thought_leaders.tier1, names: v } } })}
+          />
           <EditableList label="Competitors" items={config.competitors} onChange={(v) => updateList('competitors', v)} />
-          <EditableList label="Conference Calendar" items={config.conference_calendar} onChange={(v) => updateList('conference_calendar', v)} />
+
+          <div className="mt-4">
+            <label>Conference Calendar</label>
+            <div className="flex-wrap">
+              {config.conference_calendar.map((c, i) => (
+                <span key={i} className="tag" title={c.topics.join(', ')}>
+                  {c.name} ({c.start.join('/')}–{c.end.join('/')})
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>

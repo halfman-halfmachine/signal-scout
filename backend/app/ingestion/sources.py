@@ -100,8 +100,12 @@ def _iso_ms(date_str: str | None) -> int:
 
 async def fetch_reddit(client: httpx.AsyncClient, subs: str, cfg_engine: dict) -> list[dict]:
     url = f"https://www.reddit.com/r/{subs}/hot.json?limit=30&raw_json=1&t=week"
-    r = await client.get(url, headers={"User-Agent": f"{config.USER_AGENT} (thought-leadership-radar)"})
-    r.raise_for_status()
+    try:
+        r = await client.get(url, headers={"User-Agent": f"{config.USER_AGENT} (thought-leadership-rador)"})
+    except Exception:
+        return []
+    if r.status_code != 200:
+        return []
     children = r.json().get("data", {}).get("children", [])
     out = []
     for c in children:
